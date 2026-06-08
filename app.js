@@ -273,17 +273,19 @@ function drawVizScale(ctx,c,mode){
 }
 
 
-function drawTrackedParticle(ctx,x,y,label="observation point"){
+function drawTrackedParticle(ctx,x,y,label=""){
   ctx.save();
   ctx.fillStyle="#ff4d6d";
   ctx.strokeStyle="#ffffff";
   ctx.lineWidth=2;
   ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  ctx.strokeStyle="rgba(255,77,109,.8)";
-  ctx.beginPath(); ctx.moveTo(x+12,y-12); ctx.lineTo(x+54,y-32); ctx.stroke();
-  ctx.fillStyle="#ffd6de";
-  ctx.font="15px Sarabun, system-ui, sans-serif";
-  ctx.fillText(label,x+58,y-34);
+  if(label){
+    ctx.strokeStyle="rgba(255,77,109,.8)";
+    ctx.beginPath(); ctx.moveTo(x+12,y-12); ctx.lineTo(x+54,y-32); ctx.stroke();
+    ctx.fillStyle="#ffd6de";
+    ctx.font="15px Sarabun, system-ui, sans-serif";
+    ctx.fillText(label,x+58,y-34);
+  }
   ctx.restore();
 }
 function drawTrackedVertical(ctx,x,y1,y2){
@@ -298,51 +300,37 @@ function drawTrackedVertical(ctx,x,y1,y2){
 function drawLongitudinalAnnotations(ctx, x0, x, yBase){
   ctx.save();
   const centerY = yBase - 84;
-  ctx.strokeStyle = "rgba(148,163,184,.9)";
-  ctx.fillStyle = "rgba(226,232,240,.96)";
-  ctx.lineWidth = 1.5;
-  ctx.font = "14px Sarabun, system-ui, sans-serif";
+  ctx.lineWidth = 1.8;
 
-  // equilibrium marker
+  // wave propagation arrow (top-left)
+  ctx.strokeStyle = "rgba(56,189,248,.96)";
   ctx.beginPath();
-  ctx.moveTo(x0, yBase - 46);
-  ctx.lineTo(x0, yBase + 46);
-  ctx.strokeStyle = "rgba(255,255,255,.22)";
+  ctx.moveTo(96, 86);
+  ctx.lineTo(220, 86);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(220, 86);
+  ctx.lineTo(208, 79);
+  ctx.moveTo(220, 86);
+  ctx.lineTo(208, 93);
   ctx.stroke();
 
-  // wave propagation arrow
-  ctx.strokeStyle = "rgba(56,189,248,.95)";
+  // particle vibration double-arrow near tracked particle
+  ctx.strokeStyle = "rgba(251,191,36,.98)";
   ctx.beginPath();
-  ctx.moveTo(92, 84);
-  ctx.lineTo(212, 84);
+  ctx.moveTo(x0-30, yBase+56);
+  ctx.lineTo(x0+30, yBase+56);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(212,84);
-  ctx.lineTo(201,78);
-  ctx.moveTo(212,84);
-  ctx.lineTo(201,90);
+  ctx.moveTo(x0-30, yBase+56);
+  ctx.lineTo(x0-20, yBase+50);
+  ctx.moveTo(x0-30, yBase+56);
+  ctx.lineTo(x0-20, yBase+62);
+  ctx.moveTo(x0+30, yBase+56);
+  ctx.lineTo(x0+20, yBase+50);
+  ctx.moveTo(x0+30, yBase+56);
+  ctx.lineTo(x0+20, yBase+62);
   ctx.stroke();
-  ctx.fillStyle = "#cfe9ff";
-  ctx.fillText("wave propagation", 92, 72);
-
-  // particle vibration arrow
-  ctx.strokeStyle = "rgba(251,191,36,.96)";
-  ctx.beginPath();
-  ctx.moveTo(x0-28, yBase+58);
-  ctx.lineTo(x0+28, yBase+58);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x0-28, yBase+58);
-  ctx.lineTo(x0-18, yBase+52);
-  ctx.moveTo(x0-28, yBase+58);
-  ctx.lineTo(x0-18, yBase+64);
-  ctx.moveTo(x0+28, yBase+58);
-  ctx.lineTo(x0+18, yBase+52);
-  ctx.moveTo(x0+28, yBase+58);
-  ctx.lineTo(x0+18, yBase+64);
-  ctx.stroke();
-  ctx.fillStyle = "#fde68a";
-  ctx.fillText("particle vibration", x0-56, yBase+78);
 
   // amplitude marker from equilibrium to current displacement
   ctx.strokeStyle = "rgba(167,139,250,.96)";
@@ -353,34 +341,19 @@ function drawLongitudinalAnnotations(ctx, x0, x, yBase){
   ctx.stroke();
   ctx.setLineDash([]);
   ctx.beginPath();
-  ctx.moveTo(x0, centerY-9);
-  ctx.lineTo(x0, centerY+9);
-  ctx.moveTo(x, centerY-9);
-  ctx.lineTo(x, centerY+9);
+  ctx.moveTo(x0, centerY-8);
+  ctx.lineTo(x0, centerY+8);
+  ctx.moveTo(x, centerY-8);
+  ctx.lineTo(x, centerY+8);
   ctx.stroke();
   ctx.fillStyle = "#ddd6fe";
-  const mx = (x0 + x) / 2;
-  ctx.fillText("A = max particle displacement", Math.min(mx-58, x0+36), centerY-10);
-
-  // equilibrium label
-  ctx.fillStyle = "#cbd5e1";
-  ctx.fillText("equilibrium", x0-22, yBase-54);
+  ctx.font = "bold 16px Sarabun, system-ui, sans-serif";
+  ctx.fillText("A", ((x0 + x) / 2) - 5, centerY - 10);
   ctx.restore();
 }
 
 function drawVizLegend(ctx,c){
-  ctx.save();
-  ctx.fillStyle="rgba(5,18,40,.78)";
-  ctx.strokeStyle="rgba(255,255,255,.16)";
-  ctx.lineWidth=1;
-  const x=c.width-270,y=16,w=235,h=36;
-  ctx.beginPath(); ctx.roundRect(x,y,w,h,10); ctx.fill(); ctx.stroke();
-  ctx.fillStyle="#ff4d6d";
-  ctx.beginPath(); ctx.arc(x+20,y+18,6,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle="#e8eefc";
-  ctx.font="14px Sarabun, system-ui, sans-serif";
-  ctx.fillText("highlighted observation point",x+34,y+23);
-  ctx.restore();
+  // legend hidden on longitudinal focus page to keep the graph clean
 }
 
 function drawVisualizer(){
@@ -420,11 +393,12 @@ function drawVisualizer(){
           ctx.beginPath(); ctx.moveTo(x0,yBase-35); ctx.lineTo(x0,yBase+35); ctx.stroke();
           if(isTracked){
             drawTrackedVertical(ctx,x0,yBase-42,yBase+42);
-            drawTrackedParticle(ctx,x,yBase,"tracked particle");
+            drawTrackedParticle(ctx,x,yBase,"");
+            drawLongitudinalAnnotations(ctx,x0,x,yBase);
           }
         }
         if(mode==="pressure" && isTracked && yBase===mid-50){
-          drawTrackedParticle(ctx,x,yBase,"tracked particle");
+          drawTrackedParticle(ctx,x,yBase,"");
         }
       }
     }

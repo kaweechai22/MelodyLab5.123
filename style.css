@@ -1283,3 +1283,13 @@ main.wrap{
   .longitudinalFocusPage .embeddedPlayerBar{padding:10px 12px}
   .longitudinalFocusPage .embeddedPlayerBar .playerBtn{width:46px;height:46px}
 }
+
+
+/* v5.32 longitudinal refined text layout */
+.longitudinalFocusPage .panelTitleStack{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:10px}
+.longitudinalFocusPage .panelTitleStack h3{margin:0}
+.longitudinalFocusPage .panelSubtext{margin:0;color:#9fb2cf;font-size:.82rem;line-height:1.4}
+.longitudinalFocusPage .longitudinalControlViz .panelSubtext{max-width:100%}
+.longitudinalFocusPage .templateExportCard .panelSubtext{max-width:100%}
+.longitudinalFocusPage .longitudinalControlViz .panelTitleRow,
+.longitudinalFocusPage .templateExportCard .panelTitleRow{display:none !important}
