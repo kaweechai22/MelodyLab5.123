@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MelodyLab v5.116 - Sound Refraction (การหักเหของเสียง)</title><meta name="description" content="MelodyLab ห้องทดลองเสียงและเก็บข้อมูล ด้วยมือถือ"><meta name="theme-color" content="#0f172a"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="style.css"><meta name="melodylab-build-version" content="v5.116-clean-release"></head><body class="detailPage page-visualizer"><header><div class="wrap nav detailNav"><button class="backBtn" onclick="location.href='visualizer.html'">←</button><a class="brand" href="index.html"><img src="icon-192.png" alt="MelodyLab"><span>Sound Refraction (การหักเหของเสียง)</span></a></div></header>
+<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MelodyLab v5.127 - Sound Refraction (การหักเหของเสียง)</title><meta name="description" content="MelodyLab ห้องทดลองเสียงและเก็บข้อมูล ด้วยมือถือ"><meta name="theme-color" content="#0f172a"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="style.css"><meta name="melodylab-build-version" content="v5.127-sound-refraction-temp-labels"></head><body class="detailPage page-visualizer"><header><div class="wrap nav detailNav"><button class="backBtn" onclick="location.href='visualizer.html'">←</button><a class="brand" href="index.html"><img src="icon-192.png" alt="MelodyLab"><span>Sound Refraction (การหักเหของเสียง)</span></a></div></header>
 <main class="wrap detailMain" data-current="visualizer">
 <section class="section activeDetail visualizerSinglePage visualizerTemplatePage longitudinalFocusPage rebuiltTopicPage" id="visualizer" data-viz-mode="soundRefraction">
   <div class="sectionHead templateHead">
-    <div><h2>Sound Refraction (การหักเหของเสียง)</h2><p class="sectionLead">เสียงเบนทิศเมื่ออัตราเร็วเสียงในอากาศต่างกัน</p></div>
+    <div><h2>Sound Refraction (การหักเหของเสียง)</h2><p class="sectionLead">เสียงเบนทิศเมื่ออุณหภูมิอากาศต่างกัน เริ่มจากแบบแบ่งชั้น แล้วเชื่อมโยงสู่แบบเกรเดียน</p></div>
   </div>
   <div class="visualizerTemplateGrid longitudinalFocusGrid">
     <div class="card mainViz templateMainViz longitudinalMainViz">
@@ -21,8 +21,9 @@
         <div class="detailsBody"><div class="templateUnderCanvas explainGrid">
           <div class="templateInsightCard"><div class="insightTitle">สิ่งที่สังเกตได้</div><ul>
                 <li>อากาศอุ่นเสียงเดินทางเร็วกว่า อากาศเย็นเสียงเดินทางช้ากว่า</li>
-                <li>แนวเสียงเบนเข้าหาบริเวณที่อัตราเร็วเสียงต่ำกว่า</li>
-                <li>ใช้เพื่ออธิบายการเบนของเสียงในชั้นอากาศ</li>
+                <li>ในแบบแบ่งชั้น เสียงเปลี่ยนทิศชัดเมื่อผ่านรอยต่อของชั้นอากาศ</li>
+                <li>ในแบบเกรเดียน อุณหภูมิเปลี่ยนค่อย ๆ ทำให้แนวเสียงโค้งต่อเนื่อง</li>
+                <li>แนวเสียงมีแนวโน้มเบนเข้าหาบริเวณที่อัตราเร็วเสียงต่ำกว่า</li>
           </ul></div>
           <div class="templateLegendCard">
             <div class="legendRow"><span class="legendDot cyan"></span><span>แนวคลื่น/รังสีเสียง</span></div>
@@ -34,6 +35,24 @@
     </div>
     <div class="card controlViz templateControlViz longitudinalControlViz neonControlViz">
       <div class="panelTitleStack"><h3>Parameters (ตัวแปรควบคุม)</h3><p class="panelSubtext">ปรับค่าแล้วสังเกตการเปลี่ยนแปลงของภาพจำลอง</p></div>
+      <div class="field richField neonParamRow refractionModeRow">
+        <div class="paramIcon">ชั้น</div>
+        <div class="paramText"><label>รูปแบบอุณหภูมิ</label><small>เริ่มจากแบบแบ่งชั้น แล้วดูแบบเกรเดียน</small></div>
+        <select id="vizRefractionMode">
+          <option value="layer" selected>แบบแบ่งชั้น</option>
+          <option value="gradient">แบบเกรเดียน</option>
+        </select>
+        <div class="paramValueWrap"><span id="vizRefractionModeLabel" class="valueBadge">แบ่งชั้น</span></div>
+      </div>
+      <div class="field richField neonParamRow hotSideRow">
+        <div class="paramIcon">↕</div>
+        <div class="paramText"><label>ตำแหน่งอากาศอุ่น</label><small>สลับฝั่งอุณหภูมิ</small></div>
+        <select id="vizHotSide">
+          <option value="top" selected>อุณหภูมิอากาศสูงกว่าด้านบน</option>
+          <option value="bottom">อุณหภูมิอากาศสูงกว่าด้านล่าง</option>
+        </select>
+        <div class="paramValueWrap"><span id="vizHotSideLabel" class="valueBadge">อุณหภูมิอากาศสูงกว่าด้านบน</span></div>
+      </div>
       <div class="field richField neonParamRow">
         <div class="paramIcon">ΔT</div>
         <div class="paramText"><label>ความต่างอุณหภูมิ</label><small>Temperature difference ΔT</small></div>

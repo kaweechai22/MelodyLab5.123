@@ -2561,3 +2561,13 @@ main.wrap{
 .longitudinalFocusPage .echoDemoRow .echoDemoBtn{grid-area:button !important;width:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;min-height:52px !important;padding:12px 16px !important;font-size:.96rem !important;font-weight:800 !important;border-radius:18px !important;}
 @media (max-width: 900px){.longitudinalFocusPage .echoDemoRow{grid-template-columns:40px 1fr 86px !important;grid-template-areas:"icon text value" "picker picker picker" "button button button" !important;gap:8px 10px !important;}.longitudinalFocusPage .echoSamplePicker{justify-content:center !important;}.longitudinalFocusPage .echoDemoRow .echoDemoBtn{min-height:48px !important;font-size:.92rem !important;}}
 @media (max-width: 420px){.longitudinalFocusPage .echoChoiceBtn{min-width:76px !important;padding:8px 10px !important;font-size:.86rem !important;}}
+
+
+/* v5.126: Sound Refraction temperature side + gradient mode */
+.longitudinalFocusPage .refractionModeRow .paramIcon,.longitudinalFocusPage .hotSideRow .paramIcon{font-size:.78rem !important;}
+.longitudinalFocusPage .refractionModeRow select,.longitudinalFocusPage .hotSideRow select{min-width:132px !important;}
+@media(max-width:760px){.longitudinalFocusPage .refractionModeRow select,.longitudinalFocusPage .hotSideRow select{width:100% !important;min-width:0 !important;}}
+
+
+/* v5.127: Sound Refraction temperature wording polish */
+.longitudinalFocusPage .hotSideRow select{min-width:180px !important;}
