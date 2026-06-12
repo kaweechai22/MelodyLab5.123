@@ -2533,3 +2533,11 @@ main.wrap{
   .longitudinalFocusPage .echoDemoRow{grid-template-columns:34px 1fr 74px !important;}
   .longitudinalFocusPage .echoDemoRow .echoDemoBtn{font-size:.88rem !important; padding:11px 12px !important;}
 }
+
+/* v5.121 natural physics echo: button text tuned */
+
+
+/* v5.122 cleaner echo row: remove explanatory subtext under the button */
+.longitudinalFocusPage .echoDemoRow .echoText small{display:none !important;}
+.longitudinalFocusPage .echoDemoRow .echoText label{font-size:1rem !important;}
+@media(max-width:760px){.longitudinalFocusPage .echoDemoRow .echoText label{font-size:.94rem !important;}}

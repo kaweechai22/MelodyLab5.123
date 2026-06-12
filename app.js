@@ -2259,108 +2259,79 @@ function updateVizPlayerButtons(trigger){
 
 
 function playReflectionEchoDemo(){
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if(!AudioCtx){
-    alert("เบราว์เซอร์นี้ไม่รองรับ Web Audio");
-    return;
-  }
-  const ctx = new AudioCtx();
-  if(ctx.state === "suspended") ctx.resume();
-  const now = ctx.currentTime + 0.06;
   const distance = Number($("vizDistance")?.value || 10);
   const amp = Number($("vizAmp")?.value || 0.8);
   const wallType = $("vizWallType")?.value || "rigid";
   const echoDelay = 2*distance/343;
   const echoOccurs = echoDelay >= 0.10;
   const reflRatio = wallType === "rigid" ? 0.90 : 0.45;
-  const sampleRate = ctx.sampleRate;
+  const label = $("vizEchoAudioLabel");
 
-  function makeTapBuffer(duration=0.12){
-    const len = Math.floor(duration*sampleRate);
-    const buffer = ctx.createBuffer(1, len, sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<len;i++){
-      const t=i/sampleRate;
-      const env=Math.exp(-t/0.024) * (1-Math.exp(-t/0.0018));
-      data[i]=(Math.random()*2-1)*env;
-    }
-    return buffer;
+  // v5.122: use the spoken word "physics" as the direct sound.
+  // Echo repeats use only the final tail "sics", closer to what listeners perceive from speech echoes.
+  // Echo tail is played only when the physics condition t_echo >= 0.10 s is true.
+  if(!("speechSynthesis" in window)){
+    if(label) label.textContent = "ไม่รองรับเสียงพูด";
+    alert("เบราว์เซอร์นี้ไม่รองรับเสียงพูดอัตโนมัติ");
+    return;
   }
 
-  const tapBuffer = makeTapBuffer();
-  function playTap(t, gainScale=1, dull=false){
-    const src = ctx.createBufferSource();
-    src.buffer = tapBuffer;
-    const hp = ctx.createBiquadFilter();
-    hp.type = "highpass";
-    hp.frequency.value = dull ? 520 : 900;
-    const bp = ctx.createBiquadFilter();
-    bp.type = "bandpass";
-    bp.frequency.value = dull ? 1250 : 1800;
-    bp.Q.value = dull ? 0.7 : 1.0;
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.02, gainScale), t+0.006);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t+0.12);
-    src.connect(hp).connect(bp).connect(gain).connect(ctx.destination);
-    src.start(t);
-    src.stop(t+0.13);
-  }
+  const synth = window.speechSynthesis;
+  const baseVolume = Math.max(0.55, Math.min(1, amp));
+  const echo1Volume = Math.max(0.10, Math.min(0.62, baseVolume * reflRatio * 0.55));
+  const echo2Volume = Math.max(0.05, Math.min(0.34, baseVolume * reflRatio * 0.28));
+  const echo3Volume = Math.max(0.03, Math.min(0.18, baseVolume * reflRatio * 0.14));
 
-  const directGain = Math.max(0.12, Math.min(0.46, amp*0.34));
-  const echoGain = Math.max(0.045, directGain*reflRatio*0.72);
+  const chooseVoice = () => {
+    const voices = synth.getVoices ? synth.getVoices() : [];
+    return voices.find(v => /en-US/i.test(v.lang || ""))
+      || voices.find(v => /^en/i.test(v.lang || ""))
+      || voices[0]
+      || null;
+  };
 
-  // Short tap layer makes the echo timing clear even on phones.
-  playTap(now, directGain, false);
-  playTap(now + Math.max(0.012, echoDelay), echoGain, true);
-  if(echoOccurs){
-    playTap(now + echoDelay*2, echoGain*0.45, true);
-    playTap(now + echoDelay*3, echoGain*0.22, true);
-  }
-
-  // Voice layer: say "physics", then the echo tail "sics" softly repeats.
-  // v5.119: make TTS more reliable on mobile/PWA.
-  if("speechSynthesis" in window){
-    try{
-      const synth = window.speechSynthesis;
-      synth.cancel();
-      synth.resume();
-      const voices = synth.getVoices ? synth.getVoices() : [];
-      const englishVoice = voices.find(v => /^en/i.test(v.lang || "")) || voices[0] || null;
-      const speak = (text, delayMs, volume, rate=0.92) => {
-        setTimeout(()=>{
-          try{
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = (englishVoice && englishVoice.lang) ? englishVoice.lang : "en-US";
-            if(englishVoice) u.voice = englishVoice;
-            u.volume = Math.max(0.05, Math.min(1, volume));
-            u.rate = rate;
-            u.pitch = 1.0;
-            synth.speak(u);
-          }catch(err){ /* keep tap layer as fallback */ }
-        }, Math.max(0, delayMs));
-      };
-      // Slight delay helps some Android devices start the first utterance reliably.
-      speak("physics", 40, Math.max(0.52, Math.min(1, amp)), 0.90);
-      const firstEchoMs = Math.round(echoDelay*1000) + 40;
-      if(echoOccurs){
-        speak("sics", firstEchoMs, Math.max(0.12, reflRatio*0.62), 0.88);
-        speak("sics", Math.round(echoDelay*2000) + 40, Math.max(0.08, reflRatio*0.36), 0.86);
-        speak("sics", Math.round(echoDelay*3000) + 40, Math.max(0.05, reflRatio*0.20), 0.84);
-      }else{
-        // Very close reflection: keep only a faint quick tail so it does not sound like a separated echo.
-        speak("sics", Math.max(90, firstEchoMs), Math.max(0.05, reflRatio*0.18), 0.95);
+  const speak = (text, delayMs, volume, rate=0.90, pitch=1.0) => {
+    setTimeout(()=>{
+      try{
+        const u = new SpeechSynthesisUtterance(text);
+        const voice = chooseVoice();
+        u.lang = voice?.lang || "en-US";
+        if(voice) u.voice = voice;
+        u.volume = Math.max(0.02, Math.min(1, volume));
+        u.rate = rate;
+        u.pitch = pitch;
+        synth.speak(u);
+      }catch(err){
+        if(label) label.textContent = "เล่นเสียงไม่ได้";
       }
-    }catch(e){
-      // Web Audio tap layer above is the fallback.
+    }, Math.max(0, delayMs));
+  };
+
+  try{
+    synth.cancel();
+    synth.resume();
+
+    // Dry/direct sound: the original word.
+    speak("physics", 40, baseVolume, 0.90, 1.00);
+
+    if(echoOccurs){
+      // Natural classroom echo design: keep the direct word complete,
+      // then let only the final tail "sics" return as the audible echo.
+      // This avoids the echo sounding like a second person saying the full word again.
+      const d1 = Math.round(echoDelay*1000) + 40;
+      speak("sics", d1, echo1Volume, 0.84, 0.96);
+      speak("sics", Math.round(echoDelay*2000) + 40, echo2Volume, 0.80, 0.94);
+      if(echoDelay >= 0.16){
+        speak("sics", Math.round(echoDelay*3000) + 40, echo3Volume, 0.78, 0.92);
+      }
+      if(label) label.textContent = "✅ เกิด Echo";
+    }else{
+      // No separated echo: play only the original word. Do not play echo repeats.
+      if(label) label.textContent = "⚠️ ยังไม่เกิด Echo";
     }
+  }catch(e){
+    if(label) label.textContent = "เล่นเสียงไม่ได้";
   }
-
-  if($("vizEchoAudioLabel")){
-    $("vizEchoAudioLabel").textContent = echoOccurs ? "✅ เกิด Echo" : "⚠️ ไม่เกิด Echo";
-  }
-
-  setTimeout(()=>ctx.close().catch(()=>{}), Math.ceil((Math.max(echoDelay*3.2, 0.6)+0.9)*1000));
 }
 
 function initVisualizer(){

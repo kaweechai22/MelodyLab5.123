@@ -173,3 +173,16 @@
 - ปรับปุ่ม “▶ เล่นตัวอย่างเสียง Echo” ให้เป็นปุ่มแนวนอนสมดุลบนมือถือ
 - เพิ่มเสียงสาธิต physics → sics ๆ ๆ พร้อมเสียงเคาะสั้นช่วยจับจังหวะ Echo
 - อัปเดต service worker cache เป็น v5.120 เพื่อลดปัญหาโหลดไฟล์เก่าค้าง
+
+
+## v5.121 Sound Reflection Natural Physics Echo
+- Removed tap/clap echo layer.
+- Echo repeats play only when t_echo >= 0.10 s.
+- Designed voice echo as repeated 'physics' with decreasing volume, slower rate, and slightly lower pitch for a more natural reflected-voice effect.
+
+
+## v5.122 Sound Reflection Physics Tail Echo
+- ลบคำอธิบายย่อยใต้ปุ่มฟังตัวอย่างเสียง Echo เพื่อลดความรกของ UI
+- เสียงตรงใช้คำว่า physics
+- เสียงสะท้อนเล่นเฉพาะเมื่อ t_echo >= 0.10 s
+- เสียงสะท้อนใช้เฉพาะหางเสียง sics ซ้ำเบาลงตามลำดับ เพื่อให้ฟังเป็นเสียงก้องธรรมชาติกว่าเสียงเต็มคำซ้ำ
